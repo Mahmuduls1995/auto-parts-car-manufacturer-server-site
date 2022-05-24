@@ -132,6 +132,20 @@ async function run() {
 
 
 
+    app.put('/user/admin/:email',verifyJWT, async (req, res) => {
+        const email = req.params.email;
+          const filter = { email: email };
+          const updateDoc = {
+            $set: { role: 'admin' },
+          };
+          const result = await userCollection.updateOne(filter, updateDoc);
+          res.send(result);
+       
+      
+  
+      })
+
+
   }
 
   finally {

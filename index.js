@@ -28,6 +28,7 @@ async function run() {
     const partsCollection = client.db("auto_parts").collection("single_parts");
     const orderCollection = client.db("auto_parts").collection("order");
     const reviewCollection = client.db("auto_parts").collection("review");
+    const userCollection = client.db("auto_parts").collection("users");
 
 
     function verifyJWT(req, res, next) {
@@ -45,6 +46,7 @@ async function run() {
         next();
       })
     }
+
 
     app.post("/login", async (req, res) => {
       const email = req.body;
@@ -79,13 +81,13 @@ async function run() {
 
     //Order Collection ApI  
 
-    app.get('/order',  async (req, res) => {
+    app.get('/order', verifyJWT, async (req, res) => {
 
-      // const decodedEmail = req.decoded.email;
+      const decodedEmail = req.decoded.email;
       const email = req.query.email;
-      // console.log(decodedEmail);
+      console.log(decodedEmail);
 
-      if (email ) {
+      if (email=== decodedEmail ) {
         const query = { email: email };
         const cursor = orderCollection.find(query);
         const orders = await cursor.toArray();
@@ -107,6 +109,22 @@ async function run() {
     app.get('/review', async (req, res) => {
       const parts = await reviewCollection.find({}).toArray();
       res.send(parts)
+    })
+
+
+
+    app.put('/user/:email', async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+      res.send({ result, token });
+
     })
 
 

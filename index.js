@@ -78,6 +78,7 @@ async function run() {
     })
 
 
+
     app.post('/single_parts', async (req, res) => {
       const parts = req.body;
       console.log(parts.data);
@@ -92,6 +93,15 @@ async function run() {
       res.send(result);
     });
 
+
+    
+        //delete a parts
+        app.delete('/single_parts/:id',async(req,res) => {
+          const id = req.params.id;
+          const query = {_id:objectId(id)}
+          const result = await partsCollection.deleteOne(query)
+          res.send(result)
+      })
 
     //Order Collection ApI  
 

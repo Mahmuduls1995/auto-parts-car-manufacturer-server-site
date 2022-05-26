@@ -118,7 +118,7 @@ async function run() {
 
       const decodedEmail = req.decoded.email;
       const email = req.query.email;
-      console.log(decodedEmail);
+      
 
       if (email === decodedEmail) {
         const query = { email: email };
@@ -132,13 +132,26 @@ async function run() {
 
     })
 
+    app.get('/orders', async (req, res) => {
+
+     
+        const cursor = orderCollection.find({});
+        const order = await cursor.toArray();
+        // console.log(order);
+        res.send(order);
+
+    })
+
+
+
+
+
     app.get('/order/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: objectId(id) };
       const booking = await orderCollection.findOne(query);
       res.send(booking);
     })
-
 
 
     //delete a Order part
@@ -172,7 +185,9 @@ async function run() {
           paid: true,
           transactionId: payment.transactionId
         }
+
       }
+
 
       const result = await paymentCollection.insertOne(payment);
       const updatedBooking = await orderCollection.updateOne(filter, updatedDoc);
@@ -213,7 +228,7 @@ async function run() {
 
 
 
-    app.put('/profile', async (req, res) => {
+    app.put('/profile',async (req, res) => {
       const email = req.params.email;
       const user = req.body;
       const filter = { email: email };
@@ -225,10 +240,6 @@ async function run() {
       res.send(result);
 
     })
-
-  
-    
-
 
 
     app.get('/admin/:email', async (req, res) => {

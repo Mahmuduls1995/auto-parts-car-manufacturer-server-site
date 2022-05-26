@@ -30,6 +30,7 @@ async function run() {
     const reviewCollection = client.db("auto_parts").collection("review");
     const userCollection = client.db("auto_parts").collection("users");
     const paymentCollection = client.db('auto_parts').collection('payments');
+    const profileCollection = client.db('auto_parts').collection('profile');
 
     function verifyJWT(req, res, next) {
       const authHeader = req.headers.authorization;
@@ -209,6 +210,25 @@ async function run() {
       res.send({ result, token });
 
     })
+
+
+
+    app.put('/profile', async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await profileCollection.updateOne( filter,updateDoc, options);
+      res.send(result);
+
+    })
+
+  
+    
+
 
 
     app.get('/admin/:email', async (req, res) => {
